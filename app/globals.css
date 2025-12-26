@@ -1,12 +1,22 @@
 :root {
-  --background: #ffffff;
+  --background: #F8F8F8; /* Snow White */
   --foreground: #171717;
+  
+  --christmas-red: #D42426;
+  --christmas-green: #165B33;
+  --christmas-gold: #F8B229;
+  --snow-white: #F8F8F8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    
+    --christmas-red: #E63537;
+    --christmas-green: #1E7A44;
+    --christmas-gold: #FFC44D;
+    --snow-white: #1a1a1a;
   }
 }
 
