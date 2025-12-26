@@ -1,4 +1,5 @@
 import styles from "./page.module.css";
+import Guestbook from "./components/Guestbook";
 
 export default function Home() {
   const products = [
@@ -37,6 +38,8 @@ export default function Home() {
           ))}
         </div>
       </main>
+
+      <Guestbook />
     </div>
   );
 }
