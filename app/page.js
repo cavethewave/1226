@@ -1,5 +1,6 @@
 import styles from "./page.module.css";
 import Guestbook from "./components/Guestbook";
+import Snow from "./components/Snow";
 
 export default function Home() {
   const products = [
@@ -13,6 +14,7 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
+      <Snow />
       <header className={styles.hero}>
         <h1>Merry Christmas!</h1>
         <p>
