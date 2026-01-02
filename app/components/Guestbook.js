@@ -1,34 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import styles from "./Guestbook.module.css";
 
 export default function Guestbook() {
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            name: "산타",
-            content: "모두 메리 크리스마스! 🎅",
-            date: "2024-12-25",
-        },
-    ]);
+    const [messages, setMessages] = useState([]);
     const [name, setName] = useState("");
     const [content, setContent] = useState("");
+    const [loading, setLoading] = useState(true);
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        fetchMessages();
+    }, []);
+
+    const fetchMessages = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('guestbook')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setMessages(data || []);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim() || !content.trim()) return;
 
-        const newMessage = {
-            id: Date.now(),
-            name,
-            content,
-            date: new Date().toISOString().split("T")[0],
-        };
+        try {
+            const { error } = await supabase
+                .from('guestbook')
+                .insert([
+                    { name, content }
+                ]);
 
-        setMessages([newMessage, ...messages]);
-        setName("");
-        setContent("");
+            if (error) throw error;
+
+            setName("");
+            setContent("");
+            fetchMessages(); // Refresh list
+        } catch (error) {
+            console.error('Error adding message:', error);
+            alert('메시지 저장에 실패했습니다.');
+        }
     };
 
     return (
@@ -59,14 +80,16 @@ export default function Guestbook() {
             </form>
 
             <div className={styles.messageList}>
-                {messages.length === 0 ? (
+                {loading ? (
+                    <p className={styles.emptyState}>로딩 중...</p>
+                ) : messages.length === 0 ? (
                     <p className={styles.emptyState}>첫 번째 메시지의 주인공이 되어보세요!</p>
                 ) : (
                     messages.map((msg) => (
                         <div key={msg.id} className={styles.messageCard}>
                             <div className={styles.messageMeta}>
                                 <span className={styles.author}>{msg.name}</span>
-                                <span className={styles.date}>{msg.date}</span>
+                                <span className={styles.date}>{new Date(msg.created_at).toLocaleDateString()}</span>
                             </div>
                             <p className={styles.messageContent}>{msg.content}</p>
                         </div>
